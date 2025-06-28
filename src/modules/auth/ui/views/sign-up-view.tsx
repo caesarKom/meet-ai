@@ -17,9 +17,10 @@ import { Input } from "@/components/ui/input";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { FaGithub, FaGoogle } from "react-icons/fa";
 
 const formSchema = z
   .object({
@@ -57,11 +58,12 @@ export const SignUpView = () => {
         name: data.name,
         email: data.email,
         password: data.password,
+        callbackURL: "/",
       },
       {
         onSuccess: () => {
-          router.push("/");
           setPending(false);
+          router.push("/");
         },
         onError: ({ error }) => {
           setError(error.message);
@@ -192,16 +194,26 @@ export const SignUpView = () => {
                     variant="outline"
                     className="w-full cursor-pointer"
                     disabled={pending}
+                    onClick={() => {
+                      authClient.signIn.social({
+                        provider: "google",
+                      });
+                    }}
                   >
-                    Google
+                    <FaGoogle />
                   </Button>
                   <Button
                     type="button"
                     variant="outline"
                     className="w-full cursor-pointer"
                     disabled={pending}
+                    onClick={() => {
+                      authClient.signIn.social({
+                        provider: "github",
+                      });
+                    }}
                   >
-                    Github
+                    <FaGithub />
                   </Button>
                 </div>
 
