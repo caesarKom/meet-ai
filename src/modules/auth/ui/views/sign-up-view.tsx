@@ -17,7 +17,6 @@ import { Input } from "@/components/ui/input";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 
@@ -34,7 +33,6 @@ const formSchema = z
   });
 
 export const SignUpView = () => {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -57,10 +55,10 @@ export const SignUpView = () => {
         name: data.name,
         email: data.email,
         password: data.password,
+        callbackURL: "/",
       },
       {
         onSuccess: () => {
-          router.push("/");
           setPending(false);
         },
         onError: ({ error }) => {
@@ -192,6 +190,11 @@ export const SignUpView = () => {
                     variant="outline"
                     className="w-full cursor-pointer"
                     disabled={pending}
+                    onClick={() => {
+                      authClient.signIn.social({
+                        provider: "google",
+                      });
+                    }}
                   >
                     Google
                   </Button>
@@ -200,6 +203,11 @@ export const SignUpView = () => {
                     variant="outline"
                     className="w-full cursor-pointer"
                     disabled={pending}
+                    onClick={() => {
+                      authClient.signIn.social({
+                        provider: "github",
+                      });
+                    }}
                   >
                     Github
                   </Button>
