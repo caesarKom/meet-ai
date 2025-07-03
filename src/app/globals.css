@@ -127,3 +127,9 @@
     cursor: pointer;
   }
 }
+
+@layer base {
+  .triger-tabs {
+    @apply text-muted-foreground rounded-none bg-background data-[state=active]:shadow-none border-b-2 border-transparent data-[state=acive]:border-b-primary data-[state=acive]:text-accent-foreground h-full hover:text-accent-foreground;
+  }
+}
