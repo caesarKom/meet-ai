@@ -21,6 +21,7 @@ import { useState } from "react";
 import { CommandSelect } from "@/components/command-select";
 import { GeneratedAvatar } from "@/components/generated-avatar";
 import { NewAgentDialog } from "@/modules/agents/ui/components/new-agent-dialog";
+import { useRouter } from "next/navigation";
 
 interface Props {
   onSuccess?: (id?: string) => void;
@@ -29,6 +30,7 @@ interface Props {
 }
 
 export const MeetingForm = ({ onCancel, onSuccess, initialValues }: Props) => {
+  const router = useRouter();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
@@ -49,19 +51,28 @@ export const MeetingForm = ({ onCancel, onSuccess, initialValues }: Props) => {
           trpc.meetings.getMany.queryOptions({})
         );
 
-        // TODO
+        await queryClient.invalidateQueries(
+          trpc.premium.getFreeUsage.queryOptions()
+        );
+
         onSuccess?.(data.id);
       },
       onError: (error) => {
         toast.error(error.message);
+
+        if (error.data?.code === "FORBIDDEN") {
+          router.push("/upgrade");
+        }
       },
     })
   );
 
   const updateMeeting = useMutation(
     trpc.meetings.update.mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries(trpc.meetings.getMany.queryOptions({}));
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(
+          trpc.meetings.getMany.queryOptions({})
+        );
 
         if (initialValues?.id) {
           queryClient.invalidateQueries(
